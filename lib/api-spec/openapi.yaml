@@ -1,0 +1,1354 @@
+openapi: 3.1.0
+info:
+  title: Api
+  version: 0.1.0
+  description: CyberMail Email Campaign Platform API
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: dashboard
+    description: Dashboard metrics
+  - name: contacts
+    description: Contact management
+  - name: templates
+    description: Email templates
+  - name: smtp-profiles
+    description: SMTP configuration profiles
+  - name: campaigns
+    description: Email campaigns
+  - name: delivery-logs
+    description: Delivery tracking logs
+  - name: reputation
+    description: Reputation monitoring
+
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /dashboard/metrics:
+    get:
+      operationId: getDashboardMetrics
+      tags: [dashboard]
+      summary: Get dashboard KPI metrics
+      responses:
+        "200":
+          description: Dashboard metrics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardMetrics"
+
+  /dashboard/recent-activity:
+    get:
+      operationId: getRecentActivity
+      tags: [dashboard]
+      summary: Get recent activity logs
+      responses:
+        "200":
+          description: Recent activity
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ActivityItem"
+
+  /contacts:
+    get:
+      operationId: listContacts
+      tags: [contacts]
+      summary: List contacts
+      parameters:
+        - name: segment
+          in: query
+          schema:
+            type: string
+        - name: tag
+          in: query
+          schema:
+            type: string
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        "200":
+          description: List of contacts
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContactListResponse"
+    post:
+      operationId: createContact
+      tags: [contacts]
+      summary: Create a contact
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateContactRequest"
+      responses:
+        "201":
+          description: Contact created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Contact"
+
+  /contacts/import:
+    post:
+      operationId: importContacts
+      tags: [contacts]
+      summary: Import contacts from CSV
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ImportContactsRequest"
+      responses:
+        "200":
+          description: Import result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ImportResult"
+
+  /contacts/{id}:
+    get:
+      operationId: getContact
+      tags: [contacts]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Contact
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Contact"
+    patch:
+      operationId: updateContact
+      tags: [contacts]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateContactRequest"
+      responses:
+        "200":
+          description: Updated contact
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Contact"
+    delete:
+      operationId: deleteContact
+      tags: [contacts]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /contacts/segments:
+    get:
+      operationId: listSegments
+      tags: [contacts]
+      summary: List contact segments
+      responses:
+        "200":
+          description: Segments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Segment"
+    post:
+      operationId: createSegment
+      tags: [contacts]
+      summary: Create a segment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateSegmentRequest"
+      responses:
+        "201":
+          description: Segment created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Segment"
+
+  /templates:
+    get:
+      operationId: listTemplates
+      tags: [templates]
+      summary: List templates
+      responses:
+        "200":
+          description: Templates
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Template"
+    post:
+      operationId: createTemplate
+      tags: [templates]
+      summary: Create a template
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTemplateRequest"
+      responses:
+        "201":
+          description: Template created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Template"
+
+  /templates/{id}:
+    get:
+      operationId: getTemplate
+      tags: [templates]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Template
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Template"
+    patch:
+      operationId: updateTemplate
+      tags: [templates]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateTemplateRequest"
+      responses:
+        "200":
+          description: Updated template
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Template"
+    delete:
+      operationId: deleteTemplate
+      tags: [templates]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /smtp-profiles:
+    get:
+      operationId: listSmtpProfiles
+      tags: [smtp-profiles]
+      summary: List SMTP profiles
+      responses:
+        "200":
+          description: SMTP profiles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SmtpProfile"
+    post:
+      operationId: createSmtpProfile
+      tags: [smtp-profiles]
+      summary: Create SMTP profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateSmtpProfileRequest"
+      responses:
+        "201":
+          description: SMTP profile created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SmtpProfile"
+
+  /smtp-profiles/{id}:
+    patch:
+      operationId: updateSmtpProfile
+      tags: [smtp-profiles]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateSmtpProfileRequest"
+      responses:
+        "200":
+          description: Updated SMTP profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SmtpProfile"
+    delete:
+      operationId: deleteSmtpProfile
+      tags: [smtp-profiles]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /smtp-profiles/{id}/verify:
+    post:
+      operationId: verifySmtpProfile
+      tags: [smtp-profiles]
+      summary: Verify SMTP connection
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Verification result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SmtpVerifyResult"
+
+  /campaigns:
+    get:
+      operationId: listCampaigns
+      tags: [campaigns]
+      summary: List campaigns
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [draft, scheduled, sending, sent, paused, failed]
+      responses:
+        "200":
+          description: Campaigns
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Campaign"
+    post:
+      operationId: createCampaign
+      tags: [campaigns]
+      summary: Create a campaign
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCampaignRequest"
+      responses:
+        "201":
+          description: Campaign created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Campaign"
+
+  /campaigns/{id}:
+    get:
+      operationId: getCampaign
+      tags: [campaigns]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Campaign
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Campaign"
+    patch:
+      operationId: updateCampaign
+      tags: [campaigns]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateCampaignRequest"
+      responses:
+        "200":
+          description: Updated campaign
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Campaign"
+    delete:
+      operationId: deleteCampaign
+      tags: [campaigns]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /campaigns/{id}/send-test:
+    post:
+      operationId: sendTestEmail
+      tags: [campaigns]
+      summary: Send test email
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SendTestRequest"
+      responses:
+        "200":
+          description: Test sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SendTestResult"
+
+  /campaigns/{id}/pause:
+    post:
+      operationId: pauseCampaign
+      tags: [campaigns]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Campaign paused
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Campaign"
+
+  /campaigns/{id}/resume:
+    post:
+      operationId: resumeCampaign
+      tags: [campaigns]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Campaign resumed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Campaign"
+
+  /delivery-logs:
+    get:
+      operationId: listDeliveryLogs
+      tags: [delivery-logs]
+      summary: List delivery logs
+      parameters:
+        - name: campaignId
+          in: query
+          schema:
+            type: integer
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [queued, sent, delivered, bounced, complained, unsubscribed, failed]
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        "200":
+          description: Delivery logs
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeliveryLogListResponse"
+
+  /reputation:
+    get:
+      operationId: getReputationStatus
+      tags: [reputation]
+      summary: Get reputation monitoring status
+      responses:
+        "200":
+          description: Reputation status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReputationStatus"
+
+  /reputation/alerts:
+    get:
+      operationId: listReputationAlerts
+      tags: [reputation]
+      summary: List reputation alerts
+      responses:
+        "200":
+          description: Alerts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ReputationAlert"
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+
+    DashboardMetrics:
+      type: object
+      properties:
+        totalContacts:
+          type: integer
+        totalCampaigns:
+          type: integer
+        campaignsSent:
+          type: integer
+        deliveryRate:
+          type: number
+        bounceRate:
+          type: number
+        complaintRate:
+          type: number
+        unsubscribeRate:
+          type: number
+        openRate:
+          type: number
+        clickRate:
+          type: number
+        reputationScore:
+          type: number
+        recentCampaigns:
+          type: array
+          items:
+            $ref: "#/components/schemas/CampaignSummary"
+      required:
+        - totalContacts
+        - totalCampaigns
+        - campaignsSent
+        - deliveryRate
+        - bounceRate
+        - complaintRate
+        - unsubscribeRate
+        - openRate
+        - clickRate
+        - reputationScore
+        - recentCampaigns
+
+    CampaignSummary:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        status:
+          type: string
+        sentAt:
+          type: string
+          format: date-time
+          nullable: true
+        totalRecipients:
+          type: integer
+        deliveryRate:
+          type: number
+      required:
+        - id
+        - name
+        - status
+        - sentAt
+        - totalRecipients
+        - deliveryRate
+
+    ActivityItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+          enum: [sent, delivered, bounced, complained, unsubscribed, opened, clicked]
+        email:
+          type: string
+        campaignName:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+      required:
+        - id
+        - type
+        - email
+        - campaignName
+        - timestamp
+
+    Contact:
+      type: object
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        firstName:
+          type: string
+          nullable: true
+        lastName:
+          type: string
+          nullable: true
+        company:
+          type: string
+          nullable: true
+        tags:
+          type: array
+          items:
+            type: string
+        customFields:
+          type: object
+          additionalProperties:
+            type: string
+        status:
+          type: string
+          enum: [active, unsubscribed, bounced, complained]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - email
+        - tags
+        - customFields
+        - status
+        - createdAt
+        - updatedAt
+
+    ContactListResponse:
+      type: object
+      properties:
+        contacts:
+          type: array
+          items:
+            $ref: "#/components/schemas/Contact"
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+      required:
+        - contacts
+        - total
+        - page
+        - limit
+
+    CreateContactRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        company:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        customFields:
+          type: object
+          additionalProperties:
+            type: string
+      required:
+        - email
+
+    UpdateContactRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        company:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        customFields:
+          type: object
+          additionalProperties:
+            type: string
+        status:
+          type: string
+          enum: [active, unsubscribed, bounced, complained]
+
+    ImportContactsRequest:
+      type: object
+      properties:
+        csvData:
+          type: string
+          description: CSV content as string
+        tags:
+          type: array
+          items:
+            type: string
+      required:
+        - csvData
+
+    ImportResult:
+      type: object
+      properties:
+        imported:
+          type: integer
+        skipped:
+          type: integer
+        errors:
+          type: array
+          items:
+            type: string
+      required:
+        - imported
+        - skipped
+        - errors
+
+    Segment:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        contactCount:
+          type: integer
+        criteria:
+          type: object
+          additionalProperties: true
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - name
+        - contactCount
+        - criteria
+        - createdAt
+
+    CreateSegmentRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        criteria:
+          type: object
+          additionalProperties: true
+      required:
+        - name
+        - criteria
+
+    Template:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        subject:
+          type: string
+        htmlContent:
+          type: string
+        textContent:
+          type: string
+          nullable: true
+        mergeTags:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - name
+        - subject
+        - htmlContent
+        - mergeTags
+        - createdAt
+        - updatedAt
+
+    CreateTemplateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        subject:
+          type: string
+        htmlContent:
+          type: string
+        textContent:
+          type: string
+      required:
+        - name
+        - subject
+        - htmlContent
+
+    UpdateTemplateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        subject:
+          type: string
+        htmlContent:
+          type: string
+        textContent:
+          type: string
+
+    SmtpProfile:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        host:
+          type: string
+        port:
+          type: integer
+        encryption:
+          type: string
+          enum: [none, ssl, tls, starttls]
+        username:
+          type: string
+        fromName:
+          type: string
+        fromEmail:
+          type: string
+        dailyLimit:
+          type: integer
+          nullable: true
+        hourlyLimit:
+          type: integer
+          nullable: true
+        status:
+          type: string
+          enum: [unverified, verified, failed]
+        isDefault:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - name
+        - host
+        - port
+        - encryption
+        - username
+        - fromName
+        - fromEmail
+        - status
+        - isDefault
+        - createdAt
+
+    CreateSmtpProfileRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        host:
+          type: string
+        port:
+          type: integer
+        encryption:
+          type: string
+          enum: [none, ssl, tls, starttls]
+        username:
+          type: string
+        password:
+          type: string
+        fromName:
+          type: string
+        fromEmail:
+          type: string
+        dailyLimit:
+          type: integer
+        hourlyLimit:
+          type: integer
+        isDefault:
+          type: boolean
+      required:
+        - name
+        - host
+        - port
+        - encryption
+        - username
+        - password
+        - fromName
+        - fromEmail
+
+    UpdateSmtpProfileRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        host:
+          type: string
+        port:
+          type: integer
+        encryption:
+          type: string
+          enum: [none, ssl, tls, starttls]
+        username:
+          type: string
+        password:
+          type: string
+        fromName:
+          type: string
+        fromEmail:
+          type: string
+        dailyLimit:
+          type: integer
+        hourlyLimit:
+          type: integer
+        isDefault:
+          type: boolean
+
+    SmtpVerifyResult:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        latencyMs:
+          type: integer
+          nullable: true
+      required:
+        - success
+        - message
+
+    Campaign:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        subject:
+          type: string
+        previewText:
+          type: string
+          nullable: true
+        fromName:
+          type: string
+        fromEmail:
+          type: string
+        templateId:
+          type: integer
+          nullable: true
+        smtpProfileId:
+          type: integer
+          nullable: true
+        segmentId:
+          type: integer
+          nullable: true
+        status:
+          type: string
+          enum: [draft, scheduled, sending, sent, paused, failed]
+        scheduledAt:
+          type: string
+          format: date-time
+          nullable: true
+        sentAt:
+          type: string
+          format: date-time
+          nullable: true
+        totalRecipients:
+          type: integer
+        sent:
+          type: integer
+        delivered:
+          type: integer
+        bounced:
+          type: integer
+        complained:
+          type: integer
+        unsubscribed:
+          type: integer
+        opened:
+          type: integer
+        clicked:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - name
+        - subject
+        - fromName
+        - fromEmail
+        - status
+        - totalRecipients
+        - sent
+        - delivered
+        - bounced
+        - complained
+        - unsubscribed
+        - opened
+        - clicked
+        - createdAt
+        - updatedAt
+
+    CreateCampaignRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        subject:
+          type: string
+        previewText:
+          type: string
+        fromName:
+          type: string
+        fromEmail:
+          type: string
+        templateId:
+          type: integer
+        smtpProfileId:
+          type: integer
+        segmentId:
+          type: integer
+        scheduledAt:
+          type: string
+          format: date-time
+      required:
+        - name
+        - subject
+        - fromName
+        - fromEmail
+
+    UpdateCampaignRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        subject:
+          type: string
+        previewText:
+          type: string
+        fromName:
+          type: string
+        fromEmail:
+          type: string
+        templateId:
+          type: integer
+        smtpProfileId:
+          type: integer
+        segmentId:
+          type: integer
+        scheduledAt:
+          type: string
+          format: date-time
+
+    SendTestRequest:
+      type: object
+      properties:
+        toEmail:
+          type: string
+      required:
+        - toEmail
+
+    SendTestResult:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+      required:
+        - success
+        - message
+
+    DeliveryLog:
+      type: object
+      properties:
+        id:
+          type: integer
+        campaignId:
+          type: integer
+        campaignName:
+          type: string
+        contactEmail:
+          type: string
+        status:
+          type: string
+          enum: [queued, sent, delivered, bounced, complained, unsubscribed, failed]
+        statusMessage:
+          type: string
+          nullable: true
+        smtpProfileName:
+          type: string
+          nullable: true
+        timestamp:
+          type: string
+          format: date-time
+      required:
+        - id
+        - campaignId
+        - campaignName
+        - contactEmail
+        - status
+        - timestamp
+
+    DeliveryLogListResponse:
+      type: object
+      properties:
+        logs:
+          type: array
+          items:
+            $ref: "#/components/schemas/DeliveryLog"
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+      required:
+        - logs
+        - total
+        - page
+        - limit
+
+    ReputationStatus:
+      type: object
+      properties:
+        overallScore:
+          type: number
+        ipReputation:
+          type: object
+          properties:
+            ip:
+              type: string
+            score:
+              type: number
+            blacklisted:
+              type: boolean
+            blacklists:
+              type: array
+              items:
+                type: string
+          required:
+            - ip
+            - score
+            - blacklisted
+            - blacklists
+        domainAuth:
+          type: object
+          properties:
+            domain:
+              type: string
+            spfStatus:
+              type: string
+              enum: [pass, fail, missing]
+            dkimStatus:
+              type: string
+              enum: [pass, fail, missing]
+            dmarcStatus:
+              type: string
+              enum: [pass, fail, missing]
+          required:
+            - domain
+            - spfStatus
+            - dkimStatus
+            - dmarcStatus
+        sendingMetrics:
+          type: object
+          properties:
+            bounceRate:
+              type: number
+            complaintRate:
+              type: number
+            unsubscribeRate:
+              type: number
+          required:
+            - bounceRate
+            - complaintRate
+            - unsubscribeRate
+        alerts:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReputationAlert"
+      required:
+        - overallScore
+        - ipReputation
+        - domainAuth
+        - sendingMetrics
+        - alerts
+
+    ReputationAlert:
+      type: object
+      properties:
+        id:
+          type: integer
+        severity:
+          type: string
+          enum: [info, warning, critical]
+        title:
+          type: string
+        description:
+          type: string
+        recommendations:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+          format: date-time
+        resolved:
+          type: boolean
+      required:
+        - id
+        - severity
+        - title
+        - description
+        - recommendations
+        - createdAt
+        - resolved

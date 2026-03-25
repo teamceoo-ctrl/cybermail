@@ -1,0 +1,146 @@
+Product concept
+
+A dark cyberpunk email campaign app for consent-based sending.
+
+Safe feature set
+Dashboard
+campaigns sent
+delivery rate
+bounce rate
+complaints
+unsubscribes
+IP/domain reputation alerts
+Contacts
+CSV import
+tags
+segments
+custom fields
+Personalization
+{{first_name}}
+{{last_name}}
+{{email}}
+{{company}}
+fallback values like {{first_name | default:"there"}}
+Templates
+HTML editor
+plain text version
+preview mode
+test email
+SMTP profiles
+manual host, port, username, password
+verify connection
+warm-up and rate-limit settings
+Compliance
+unsubscribe link
+suppression list
+SPF / DKIM / DMARC status
+bounce and complaint webhooks
+Reputation monitoring
+alert if sending domain or IP has reputation issues
+pause campaigns when thresholds are exceeded
+show recommended fixes
+Hacker-style UI direction
+matte black background
+neon green primary accent
+monospace headings and data values
+terminal-style panels
+glowing borders and subtle grid texture
+cards like:
+Campaign Console
+SMTP Profiles
+Contact Vault
+Template Lab
+Delivery Logs
+Reputation Monitor
+Main screens
+
+1. Dashboard
+
+top KPI cards
+recent campaigns
+live sending log
+reputation widget
+alerts panel
+
+2. Campaign Composer
+
+From name
+From email
+Subject
+Preview text
+Template selector
+audience segment
+merge tag helper
+send test
+schedule send
+
+3. SMTP Profiles
+
+SMTP host
+port
+encryption
+username
+password
+verify button
+daily/hourly limit
+status badge
+
+4. Reputation Monitor
+
+IP reputation
+domain authentication status
+blacklist alert banner
+recommendations:
+pause campaign
+rotate to approved provider
+fix SPF/DKIM
+reduce send rate
+Example blacklist alert
+
+Warning: Sending IP reputation issue detected
+Current outbound IP appears on one or more reputation lists or has elevated complaint/bounce signals.
+Recommended action: pause active campaigns, review recent bounce patterns, and switch to a verified sending provider until resolved.
+
+Safe architecture
+Frontend: Next.js + Tailwind
+Backend: Node.js / NestJS
+Queue: Redis + BullMQ
+Database: PostgreSQL
+Email: SES, Postmark, Mailgun, SendGrid, Resend, or user-owned SMTP
+Templates: React Email or MJML
+Logs: webhook ingestion for bounces, complaints, deliveries
+UI prompt
+Design a web-based email campaign platform with a dark hacker-inspired cyberpunk interface. Use black and charcoal backgrounds, neon green accents, terminal-like panels, glowing borders, monospace typography, and subtle animated scanline effects.
+
+The product should be for legitimate consent-based email campaigns only.
+
+Include these pages:
+1. Dashboard with campaign metrics, bounce rate, complaint rate, unsubscribe rate, recent activity, and a reputation monitor widget
+2. Contacts page with CSV import, tagging, segmentation, and custom fields
+3. Template editor with merge tags like {{first_name}}, {{email}}, and {{company}}
+4. SMTP Profiles page with manual SMTP configuration, connection testing, encryption options, and sending limits
+5. Campaign Composer with subject line, preview text, recipient segment, template preview, test send, and scheduling
+6. Delivery Logs page with statuses: queued, sent, delivered, bounced, complained, unsubscribed, failed
+7. Reputation Monitor page showing domain auth status, blacklist/reputation alerts, and remediation suggestions
+
+Design requirements:
+- responsive SaaS admin layout
+- left sidebar navigation
+- neon green buttons and status lights
+- terminal-style data tables
+- clean, modern UX
+- glowing alert banners for risk notifications
+- professional but edgy cybersecurity aesthetic
+Sample merge tags
+Hi {{first_name}},
+
+Your account update is ready for {{email}}.
+
+Regards,
+Team
+Safer notification logic
+warn if bounce rate exceeds threshold
+warn if complaint rate rises
+warn if SPF/DKIM/DMARC missing
+warn if provider reports poor reputation
+auto-pause campaigns based on policy

@@ -1,0 +1,100 @@
+SMTP setup options
+
+Provider SMTP
+host
+port
+username
+password
+TLS/SSL
+Local relay
+host: 127.0.0.1
+port: user-entered
+auth optional
+Test connection button
+Send test email button
+
+Do not include
+
+network scanning for SMTP services
+automatic harvesting of SMTP credentials
+automatic use of SMTP found on RDP/localhost
+proxy/SOCKS routing for sending
+
+Here’s the updated UI spec:
+
+Design a dark hacker-style email campaign dashboard with neon green accents and terminal-inspired panels.
+
+Add an SMTP Profiles page with two setup modes only:
+1. Manual SMTP
+2. Localhost Relay
+
+Manual SMTP fields:
+- Profile name
+- SMTP host
+- Port
+- Encryption: None / STARTTLS / SSL-TLS
+- Username
+- Password
+- From name
+- From email
+- Daily send cap
+- Hourly send cap
+
+Localhost Relay fields:
+- Profile name
+- Host (default: 127.0.0.1)
+- Port
+- Authentication toggle
+- Username
+- Password
+- From name
+- From email
+
+Buttons:
+- Test connection
+- Send test email
+- Save profile
+
+Add a Reputation Monitor widget that warns if:
+- outbound IP has blacklist issues
+- SPF/DKIM/DMARC are missing
+- bounce rate is too high
+- complaint rate exceeds threshold
+
+Add merge-tag support:
+- {{first_name}}
+- {{last_name}}
+- {{email}}
+- {{company}}
+- fallback syntax like {{first_name | default:"there"}}
+
+Style:
+- black background
+- green terminal glow
+- monospace fonts
+- left sidebar
+- animated live log panel
+- cyberpunk SaaS admin aesthetic
+
+And a safer backend schema:
+
+{
+  "smtpProfile": {
+    "name": "Local Relay",
+    "mode": "manual_or_localhost_only",
+    "host": "127.0.0.1",
+    "port": 25,
+    "encryption": "none",
+    "username": "",
+    "password": "",
+    "fromName": "Ops Team",
+    "fromEmail": "ops@example.com",
+    "hourlyLimit": 100,
+    "dailyLimit": 1000
+  }
+}
+
+For the blacklist warning banner text:
+
+ALERT: Sending reputation issue detected.
+The configured sending IP or domain may have reputation problems. Pause active campaigns and review authentication, bounce rate, and provider guidance before continuing.

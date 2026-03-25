@@ -1,0 +1,9 @@
+packages:
+  "recharts": "Used for dashboard analytics and performance charts"
+  "framer-motion": "Used for smooth cyberpunk entry animations and terminal text effects"
+  "date-fns": "Used for formatting timestamps and dates in logs"
+  "@hookform/resolvers": "Used for Zod schema validation in Shadcn forms"
+
+notes:
+  - "The API definitions use `data` nested payloads for mutations (e.g. `mutate({ data: { ... } })`) per Orval's output structure."
+  - "The frontend forces a strict dark mode cyberpunk theme. All red placeholder CSS variables have been rewritten."

@@ -1,0 +1,48 @@
+import { Router, type IRouter } from "express";
+import healthRouter from "./health";
+import dashboardRouter from "./dashboard";
+import contactsRouter from "./contacts";
+import templatesRouter from "./templates";
+import smtpProfilesRouter from "./smtp-profiles";
+import campaignsRouter from "./campaigns";
+import deliveryLogsRouter from "./delivery-logs";
+import reputationRouter from "./reputation";
+import networkToolsRouter from "./network-tools";
+import leadsRouter from "./leads";
+import analyzeRouter from "./analyze";
+import filesRouter from "./files";
+import authRouter from "./auth";
+import adminRouter from "./admin";
+import aiComposeRouter from "./ai-compose";
+import messagingRouter from "./messaging";
+import suppressionsRouter from "./suppressions";
+import sequencesRouter from "./sequences";
+import apiKeysRouter from "./api-keys";
+import warmupRouter from "./warmup";
+import trackingRouter from "./tracking";
+
+const router: IRouter = Router();
+
+router.use(healthRouter);
+router.use(authRouter);
+router.use(adminRouter);
+router.use(dashboardRouter);
+router.use(contactsRouter);
+router.use(templatesRouter);
+router.use(smtpProfilesRouter);
+router.use(campaignsRouter);
+router.use(deliveryLogsRouter);
+router.use(reputationRouter);
+router.use(networkToolsRouter);
+router.use(leadsRouter);
+router.use(analyzeRouter);
+router.use(filesRouter);
+router.use(aiComposeRouter);
+router.use(messagingRouter);
+router.use(suppressionsRouter);
+router.use(sequencesRouter);
+router.use(apiKeysRouter);
+router.use(warmupRouter);
+router.use(trackingRouter);
+
+export default router;
